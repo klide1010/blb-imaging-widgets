@@ -42,7 +42,8 @@ body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Ro
   <div class="upload-subtitle">Carica il file dello studio (RX/RM/TC) direttamente su Dropbox. Nessun limite di dimensione.</div>
 
   <div class="referral-info">
-    <strong>ID Studio:</strong> <span id="referral-id-display">—</span>
+    <strong>ID Studio:</strong> <span id="referral-id-display">—</span><br>
+    <strong>Clinica:</strong> <span id="clinic-name-display">—</span>
   </div>
 
   <div class="dropzone" id="dropzone">
@@ -67,14 +68,16 @@ body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Ro
 </div>
 
 <script>
-var TOKEN_URL = "https://www.zohoapis.eu/creator/custom/klide10/getDropboxToken";
+var PROXY_BASE = "https://blb-imaging-proxy.klide10.workers.dev";
+var TOKEN_PATH = "/creator/custom/klide10/getDropboxToken";
 var TOKEN_KEY = "RabVnGs7dTOhjtMU8wQd9O64Q";
-var SAVE_URL  = "https://www.zohoapis.eu/creator/custom/klide10/saveDropboxPathToReferral";
-var SAVE_KEY  = "nqDepz76bhTWxQDzjBudd19gX";
+var SAVE_PATH = "/creator/custom/klide10/saveDropboxPathToReferral";
+var SAVE_KEY = "nqDepz76bhTWxQDzjBudd19gX";
 var ZOHO_APP_URL = "https://creatorapp.zoho.eu/klide10/environment/development/veterinary-diagnostic-referral-management/";
 var CHUNK_SIZE = 8 * 1024 * 1024;
 
 var referralId = '';
+var clinicName = '';
 var selectedFile = null;
 
 var fileInput = document.getElementById('file-input');
@@ -86,6 +89,7 @@ var progressBar = document.getElementById('progress-bar');
 var progressText = document.getElementById('progress-text');
 var resultArea = document.getElementById('result-area');
 var referralDisplay = document.getElementById('referral-id-display');
+var clinicDisplay = document.getElementById('clinic-name-display');
 
 function formatSize(bytes){
   if(bytes < 1024*1024) return (bytes/1024).toFixed(1) + ' KB';
@@ -121,7 +125,11 @@ function handleFileSelect(){
 
 function extractApiResult(json){
   if(!json) return null;
-  if(json.result && json.result.output !== undefined) return json.result.output;
+  if(json.result !== undefined) {
+    if (typeof json.result === 'string') return json.result;
+    if (json.result.output !== undefined) return json.result.output;
+    return json.result;
+  }
   if(json.output !== undefined) return json.output;
   return json;
 }
@@ -134,14 +142,14 @@ function parseIfJsonString(value){
 }
 
 async function callTokenApi(){
-  var url = TOKEN_URL + '?publickey=' + TOKEN_KEY;
+  var url = PROXY_BASE + TOKEN_PATH + '?publickey=' + TOKEN_KEY;
   var res = await fetch(url, { method: 'GET' });
   if(!res.ok) throw new Error('Token API HTTP ' + res.status);
   var json = await res.json();
   return parseIfJsonString(extractApiResult(json));
 }
 async function callSaveApi(p_referral_id, p_dropbox_path){
-  var url = SAVE_URL + '?publickey=' + SAVE_KEY;
+  var url = PROXY_BASE + SAVE_PATH + '?publickey=' + SAVE_KEY;
   var body = { p_referral_id: p_referral_id, p_dropbox_path: p_dropbox_path };
   var res = await fetch(url, {
     method: 'POST',
@@ -159,6 +167,10 @@ async function startUpload(){
     resultArea.innerHTML = '<div class="result error">⚠️ ID studio mancante.</div>';
     return;
   }
+  if(!clinicName){
+    resultArea.innerHTML = '<div class="result error">⚠️ Nome clinica mancante.</div>';
+    return;
+  }
   uploadBtn.disabled = true;
   resultArea.innerHTML = '';
   progressWrap.style.display = 'block';
@@ -168,7 +180,6 @@ async function startUpload(){
     var tokenData = await callTokenApi();
     if(!tokenData || tokenData.error) throw new Error('Autenticazione: ' + (tokenData && tokenData.error || 'errore sconosciuto'));
     var accessToken = tokenData.access_token;
-    var clinicName = tokenData.clinic_name;
     var basePath = tokenData.base_path;
     if(!accessToken) throw new Error('Token Dropbox mancante');
 
@@ -235,7 +246,7 @@ async function startUpload(){
     resultArea.innerHTML =
       '<div class="result success">' +
       '✅ <strong>File caricato e collegato allo studio ' + referralId + '.</strong><br>' +
-      'Il sistema sta processando il referral. Puoi tornare al gestionale.' +
+      'Il sistema sta processando il referral.' +
       '</div>' +
       '<div class="center">' +
       '<a href="' + ZOHO_APP_URL + '" class="btn-secondary">← Torna al gestionale</a>' +
@@ -250,12 +261,16 @@ async function startUpload(){
   }
 }
 
-// Lettura referral_id da query string
+// Lettura parametri da URL
 var qs = new URLSearchParams(window.location.search);
 referralId = qs.get('p_referral_id') || qs.get('referral_id') || '';
+clinicName = qs.get('clinic_name') || '';
+
 referralDisplay.textContent = referralId || 'Mancante!';
-if(!referralId){
-  resultArea.innerHTML = '<div class="result error">⚠️ ID studio mancante nell\'URL. Torna al gestionale e crea un nuovo studio.</div>';
+clinicDisplay.textContent = clinicName || 'Mancante!';
+
+if(!referralId || !clinicName){
+  resultArea.innerHTML = '<div class="result error">⚠️ Parametri mancanti nell\'URL. Torna al gestionale e crea un nuovo studio.</div>';
 }
 </script>
 </body>
