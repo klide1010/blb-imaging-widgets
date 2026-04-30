@@ -1,428 +1,289 @@
 <!DOCTYPE html>
 <html lang="it">
-
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Caricamento Studio</title>
-    <script src="https://js.zohostatic.eu/creator/v2.0/creator-sdk.min.js"></script>
-    <style>
-        body {
-            margin: 0;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #f5f5f7;
-        }
-
-        .upload-container {
-            max-width: 720px;
-            margin: 40px auto;
-            padding: 32px;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(44, 13, 74, 0.08);
-        }
-
-        .upload-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 8px;
-        }
-
-        .upload-header h1 {
-            margin: 0;
-            color: #2C0D4A;
-            font-size: 24px;
-        }
-
-        .upload-subtitle {
-            color: #666;
-            font-size: 14px;
-            margin-bottom: 24px;
-        }
-
-        .referral-info {
-            background: #F4F0FF;
-            padding: 12px 16px;
-            border-radius: 8px;
-            margin-bottom: 24px;
-            font-size: 14px;
-            color: #2C0D4A;
-        }
-
-        .dropzone {
-            border: 2px dashed #6733AB;
-            border-radius: 12px;
-            padding: 40px 20px;
-            text-align: center;
-            background: #FAFAFE;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .dropzone:hover,
-        .dropzone.dragover {
-            background: #F4F0FF;
-            border-color: #2C0D4A;
-        }
-
-        .dropzone-icon {
-            font-size: 48px;
-            margin-bottom: 12px;
-        }
-
-        .dropzone-text {
-            color: #2C0D4A;
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-
-        .dropzone-hint {
-            color: #888;
-            font-size: 13px;
-        }
-
-        .file-info {
-            display: none;
-            margin-top: 16px;
-            padding: 12px 16px;
-            background: #F4F0FF;
-            border-radius: 8px;
-            font-size: 14px;
-            color: #2C0D4A;
-        }
-
-        .btn {
-            background: #6733AB;
-            color: white;
-            border: none;
-            padding: 14px 32px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 15px;
-            width: 100%;
-            margin-top: 20px;
-            transition: opacity 0.2s;
-        }
-
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .btn:hover:not(:disabled) {
-            background: #2C0D4A;
-        }
-
-        .progress-wrap {
-            display: none;
-            margin-top: 24px;
-        }
-
-        .progress-bar-bg {
-            background: #e8e8e8;
-            border-radius: 4px;
-            overflow: hidden;
-            height: 24px;
-        }
-
-        .progress-bar-fill {
-            background: linear-gradient(90deg, #6733AB, #9B6DD7);
-            height: 100%;
-            width: 0%;
-            transition: width 0.3s;
-        }
-
-        .progress-text {
-            margin-top: 8px;
-            font-size: 14px;
-            color: #2C0D4A;
-            text-align: center;
-        }
-
-        .result {
-            margin-top: 16px;
-            padding: 14px;
-            border-radius: 8px;
-            font-size: 14px;
-            word-break: break-word;
-        }
-
-        .result.success {
-            background: #E6F7E6;
-            color: #1a6b1a;
-            border: 1px solid #4CAF50;
-        }
-
-        .result.error {
-            background: #FDECEA;
-            color: #b00020;
-            border: 1px solid #E57373;
-        }
-
-        .btn-secondary {
-            background: white;
-            color: #6733AB;
-            border: 2px solid #6733AB;
-            padding: 12px 24px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            margin-top: 12px;
-            text-decoration: none;
-            display: inline-block;
-        }
-    </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Caricamento Studio</title>
+<style>
+body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f7; }
+.upload-container { max-width: 720px; margin: 40px auto; padding: 32px; background: white; border-radius: 12px; box-shadow: 0 4px 20px rgba(44, 13, 74, 0.08); }
+.upload-header { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+.upload-header h1 { margin: 0; color: #2C0D4A; font-size: 24px; }
+.upload-subtitle { color: #666; font-size: 14px; margin-bottom: 24px; }
+.referral-info { background: #F4F0FF; padding: 12px 16px; border-radius: 8px; margin-bottom: 24px; font-size: 14px; color: #2C0D4A; }
+.dropzone { border: 2px dashed #6733AB; border-radius: 12px; padding: 40px 20px; text-align: center; background: #FAFAFE; cursor: pointer; transition: all 0.2s; }
+.dropzone:hover, .dropzone.dragover { background: #F4F0FF; border-color: #2C0D4A; }
+.dropzone-icon { font-size: 48px; margin-bottom: 12px; }
+.dropzone-text { color: #2C0D4A; font-weight: 600; margin-bottom: 4px; }
+.dropzone-hint { color: #888; font-size: 13px; }
+.file-info { display: none; margin-top: 16px; padding: 12px 16px; background: #F4F0FF; border-radius: 8px; font-size: 14px; color: #2C0D4A; }
+.btn { background: #6733AB; color: white; border: none; padding: 14px 32px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 15px; width: 100%; margin-top: 20px; transition: opacity 0.2s; }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn:hover:not(:disabled) { background: #2C0D4A; }
+.progress-wrap { display: none; margin-top: 24px; }
+.progress-bar-bg { background: #e8e8e8; border-radius: 4px; overflow: hidden; height: 24px; }
+.progress-bar-fill { background: linear-gradient(90deg, #6733AB, #9B6DD7); height: 100%; width: 0%; transition: width 0.3s; }
+.progress-text { margin-top: 8px; font-size: 14px; color: #2C0D4A; text-align: center; }
+.result { margin-top: 16px; padding: 14px; border-radius: 8px; font-size: 14px; word-break: break-word; }
+.result.success { background: #E6F7E6; color: #1a6b1a; border: 1px solid #4CAF50; }
+.result.error { background: #FDECEA; color: #b00020; border: 1px solid #E57373; }
+</style>
 </head>
-
 <body>
 
-    <div class="upload-container">
-        <div class="upload-header">
-            <span style="font-size: 32px;">🩻</span>
-            <h1>Caricamento Studio Diagnostico</h1>
-        </div>
-        <div class="upload-subtitle">Carica il file dello studio (RX/RM/TC) direttamente su Dropbox. Nessun limite di
-            dimensione.</div>
+<div class="upload-container">
+  <div class="upload-header">
+    <span style="font-size: 32px;">🩻</span>
+    <h1>Caricamento Studio Diagnostico</h1>
+  </div>
+  <div class="upload-subtitle">Carica il file dello studio (RX/RM/TC) direttamente su Dropbox. Nessun limite di dimensione.</div>
 
-        <div class="referral-info">
-            <strong>Referral ID:</strong> <span id="referral-id-display">—</span>
-        </div>
+  <div class="referral-info">
+    <strong>Referral ID:</strong> <span id="referral-id-display">—</span>
+  </div>
 
-        <div class="dropzone" id="dropzone">
-            <div class="dropzone-icon">📁</div>
-            <div class="dropzone-text">Trascina qui il file o clicca per selezionare</div>
-            <div class="dropzone-hint">DICOM, ZIP, JPG, PDF — fino a diversi GB</div>
-            <input type="file" id="file-input" style="display:none;" />
-        </div>
+  <div class="dropzone" id="dropzone">
+    <div class="dropzone-icon">📁</div>
+    <div class="dropzone-text">Trascina qui il file o clicca per selezionare</div>
+    <div class="dropzone-hint">DICOM, ZIP, JPG, PDF — fino a diversi GB</div>
+    <input type="file" id="file-input" style="display:none;" />
+  </div>
 
-        <div class="file-info" id="file-info"></div>
+  <div class="file-info" id="file-info"></div>
 
-        <button class="btn" id="upload-btn" disabled>Carica su Dropbox</button>
+  <button class="btn" id="upload-btn" disabled>Carica su Dropbox</button>
 
-        <div class="progress-wrap" id="progress-wrap">
-            <div class="progress-bar-bg">
-                <div class="progress-bar-fill" id="progress-bar"></div>
-            </div>
-            <div class="progress-text" id="progress-text">0%</div>
-        </div>
-
-        <div id="result-area"></div>
+  <div class="progress-wrap" id="progress-wrap">
+    <div class="progress-bar-bg">
+      <div class="progress-bar-fill" id="progress-bar"></div>
     </div>
+    <div class="progress-text" id="progress-text">0%</div>
+  </div>
 
-    <script>
-        var TOKEN_URL = "https://www.zohoapis.eu/creator/custom/klide10/getDropboxToken";
-        var TOKEN_KEY = "RabVnGs7dTOhjtMU8wQd9O64Q";
-        var SAVE_URL = "https://www.zohoapis.eu/creator/custom/klide10/saveDropboxPathToReferral";
-        var SAVE_KEY = "nqDepz76bhTWxQDzjBudd19gX";
-        var CHUNK_SIZE = 8 * 1024 * 1024;
+  <div id="result-area"></div>
+</div>
 
-        var referralId = '';
-        var selectedFile = null;
+<script>
+var TOKEN_URL = "https://www.zohoapis.eu/creator/custom/klide10/getDropboxToken";
+var TOKEN_KEY = "RabVnGs7dTOhjtMU8wQd9O64Q";
+var SAVE_URL  = "https://www.zohoapis.eu/creator/custom/klide10/saveDropboxPathToReferral";
+var SAVE_KEY  = "nqDepz76bhTWxQDzjBudd19gX";
+var CHUNK_SIZE = 8 * 1024 * 1024;
 
-        var fileInput = document.getElementById('file-input');
-        var dropzone = document.getElementById('dropzone');
-        var fileInfo = document.getElementById('file-info');
-        var uploadBtn = document.getElementById('upload-btn');
-        var progressWrap = document.getElementById('progress-wrap');
-        var progressBar = document.getElementById('progress-bar');
-        var progressText = document.getElementById('progress-text');
-        var resultArea = document.getElementById('result-area');
-        var referralDisplay = document.getElementById('referral-id-display');
+var referralId = '';
+var selectedFile = null;
 
-        function formatSize(bytes) {
-            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
-            if (bytes < 1024 * 1024 * 1024) return (bytes / 1024 / 1024).toFixed(1) + ' MB';
-            return (bytes / 1024 / 1024 / 1024).toFixed(2) + ' GB';
-        }
+var fileInput = document.getElementById('file-input');
+var dropzone = document.getElementById('dropzone');
+var fileInfo = document.getElementById('file-info');
+var uploadBtn = document.getElementById('upload-btn');
+var progressWrap = document.getElementById('progress-wrap');
+var progressBar = document.getElementById('progress-bar');
+var progressText = document.getElementById('progress-text');
+var resultArea = document.getElementById('result-area');
+var referralDisplay = document.getElementById('referral-id-display');
 
-        function setProgress(pct, label) {
-            progressBar.style.width = pct + '%';
-            progressText.textContent = label || (pct + '%');
-        }
+function formatSize(bytes){
+  if(bytes < 1024*1024) return (bytes/1024).toFixed(1) + ' KB';
+  if(bytes < 1024*1024*1024) return (bytes/1024/1024).toFixed(1) + ' MB';
+  return (bytes/1024/1024/1024).toFixed(2) + ' GB';
+}
+function setProgress(pct, label){
+  progressBar.style.width = pct + '%';
+  progressText.textContent = label || (pct + '%');
+}
 
-        dropzone.addEventListener('click', function () { fileInput.click(); });
-        dropzone.addEventListener('dragover', function (e) { e.preventDefault(); dropzone.classList.add('dragover'); });
-        dropzone.addEventListener('dragleave', function () { dropzone.classList.remove('dragover'); });
-        dropzone.addEventListener('drop', function (e) {
-            e.preventDefault();
-            dropzone.classList.remove('dragover');
-            if (e.dataTransfer.files.length > 0) {
-                fileInput.files = e.dataTransfer.files;
-                handleFileSelect();
-            }
-        });
-        fileInput.addEventListener('change', handleFileSelect);
-        uploadBtn.addEventListener('click', startUpload);
+dropzone.addEventListener('click', function(){ fileInput.click(); });
+dropzone.addEventListener('dragover', function(e){ e.preventDefault(); dropzone.classList.add('dragover'); });
+dropzone.addEventListener('dragleave', function(){ dropzone.classList.remove('dragover'); });
+dropzone.addEventListener('drop', function(e){
+  e.preventDefault();
+  dropzone.classList.remove('dragover');
+  if(e.dataTransfer.files.length > 0){
+    fileInput.files = e.dataTransfer.files;
+    handleFileSelect();
+  }
+});
+fileInput.addEventListener('change', handleFileSelect);
+uploadBtn.addEventListener('click', startUpload);
 
-        function handleFileSelect() {
-            if (fileInput.files.length === 0) return;
-            selectedFile = fileInput.files[0];
-            fileInfo.style.display = 'block';
-            fileInfo.innerHTML = '📎 <strong>' + selectedFile.name + '</strong><br>Dimensione: ' + formatSize(selectedFile.size);
-            uploadBtn.disabled = false;
-        }
+function handleFileSelect(){
+  if(fileInput.files.length === 0) return;
+  selectedFile = fileInput.files[0];
+  fileInfo.style.display = 'block';
+  fileInfo.innerHTML = '📎 <strong>' + selectedFile.name + '</strong><br>Dimensione: ' + formatSize(selectedFile.size);
+  uploadBtn.disabled = false;
+}
 
-        function extractApiResult(json) {
-            if (!json) return null;
-            if (json.result && json.result.output !== undefined) return json.result.output;
-            if (json.output !== undefined) return json.output;
-            return json;
-        }
-        function parseIfJsonString(value) {
-            if (typeof value === 'string') {
-                try { return JSON.parse(value); }
-                catch (e) { return { raw: value }; }
-            }
-            return value;
-        }
+function extractApiResult(json){
+  if(!json) return null;
+  if(json.result && json.result.output !== undefined) return json.result.output;
+  if(json.output !== undefined) return json.output;
+  return json;
+}
+function parseIfJsonString(value){
+  if(typeof value === 'string'){
+    try { return JSON.parse(value); }
+    catch(e){ return { raw: value }; }
+  }
+  return value;
+}
 
-        async function callTokenApi() {
-            var url = TOKEN_URL + '?publickey=' + TOKEN_KEY;
-            var res = await fetch(url, { method: 'GET' });
-            if (!res.ok) throw new Error('Token API HTTP ' + res.status);
-            var json = await res.json();
-            return parseIfJsonString(extractApiResult(json));
-        }
-        async function callSaveApi(p_referral_id, p_dropbox_path) {
-            var url = SAVE_URL + '?publickey=' + SAVE_KEY;
-            var body = { p_referral_id: p_referral_id, p_dropbox_path: p_dropbox_path };
-            var res = await fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(body)
-            });
-            if (!res.ok) throw new Error('Save API HTTP ' + res.status);
-            var json = await res.json();
-            return parseIfJsonString(extractApiResult(json));
-        }
+async function callTokenApi(){
+  var url = TOKEN_URL + '?publickey=' + TOKEN_KEY;
+  var res = await fetch(url, { method: 'GET' });
+  if(!res.ok) throw new Error('Token API HTTP ' + res.status);
+  var json = await res.json();
+  return parseIfJsonString(extractApiResult(json));
+}
+async function callSaveApi(p_referral_id, p_dropbox_path){
+  var url = SAVE_URL + '?publickey=' + SAVE_KEY;
+  var body = { p_referral_id: p_referral_id, p_dropbox_path: p_dropbox_path };
+  var res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+  if(!res.ok) throw new Error('Save API HTTP ' + res.status);
+  var json = await res.json();
+  return parseIfJsonString(extractApiResult(json));
+}
 
-        async function startUpload() {
-            if (!selectedFile) return;
-            if (!referralId) {
-                resultArea.innerHTML = '<div class="result error">⚠️ Referral ID mancante. Ricarica la pagina.</div>';
-                return;
-            }
-            uploadBtn.disabled = true;
-            resultArea.innerHTML = '';
-            progressWrap.style.display = 'block';
-            setProgress(0, 'Richiesta token Dropbox...');
+async function startUpload(){
+  if(!selectedFile) return;
+  if(!referralId){
+    resultArea.innerHTML = '<div class="result error">⚠️ Referral ID mancante. Ricarica la pagina.</div>';
+    return;
+  }
+  uploadBtn.disabled = true;
+  resultArea.innerHTML = '';
+  progressWrap.style.display = 'block';
+  setProgress(0, 'Richiesta token Dropbox...');
 
-            try {
-                var tokenData = await callTokenApi();
-                if (!tokenData || tokenData.error) throw new Error('Auth: ' + (tokenData && tokenData.error || 'unknown'));
-                var accessToken = tokenData.access_token;
-                var clinicName = tokenData.clinic_name;
-                var basePath = tokenData.base_path;
-                if (!accessToken) throw new Error('Token Dropbox mancante');
+  try {
+    var tokenData = await callTokenApi();
+    if(!tokenData || tokenData.error) throw new Error('Auth: ' + (tokenData && tokenData.error || 'unknown'));
+    var accessToken = tokenData.access_token;
+    var clinicName = tokenData.clinic_name;
+    var basePath = tokenData.base_path;
+    if(!accessToken) throw new Error('Token Dropbox mancante');
 
-                var ts = new Date().toISOString().replace(/[-:.TZ]/g, '').substring(0, 15);
-                var safeName = selectedFile.name.replace(/[^a-zA-Z0-9._-]/g, '_');
-                var dropboxPath = basePath + '/' + clinicName + '/' + referralId + '/studio_' + referralId + '_' + ts + '_' + safeName;
+    var ts = new Date().toISOString().replace(/[-:.TZ]/g,'').substring(0,15);
+    var safeName = selectedFile.name.replace(/[^a-zA-Z0-9._-]/g,'_');
+    var dropboxPath = basePath + '/' + clinicName + '/' + referralId + '/studio_' + referralId + '_' + ts + '_' + safeName;
 
-                setProgress(2, 'Avvio upload (' + formatSize(selectedFile.size) + ')...');
-                var sessionId = null;
-                var offset = 0;
-                var totalSize = selectedFile.size;
-                var finalPath = null;
+    setProgress(2, 'Avvio upload (' + formatSize(selectedFile.size) + ')...');
+    var sessionId = null;
+    var offset = 0;
+    var totalSize = selectedFile.size;
+    var finalPath = null;
 
-                while (offset < totalSize) {
-                    var end = Math.min(offset + CHUNK_SIZE, totalSize);
-                    var chunk = selectedFile.slice(offset, end);
-                    var isFirst = (offset === 0);
-                    var isLast = (end === totalSize);
-                    var url, args;
-                    if (isFirst && isLast) {
-                        url = 'https://content.dropboxapi.com/2/files/upload';
-                        args = { path: dropboxPath, mode: 'add', autorename: true };
-                    } else if (isFirst) {
-                        url = 'https://content.dropboxapi.com/2/files/upload_session/start';
-                        args = { close: false };
-                    } else if (isLast) {
-                        url = 'https://content.dropboxapi.com/2/files/upload_session/finish';
-                        args = { cursor: { session_id: sessionId, offset: offset }, commit: { path: dropboxPath, mode: 'add', autorename: true } };
-                    } else {
-                        url = 'https://content.dropboxapi.com/2/files/upload_session/append_v2';
-                        args = { cursor: { session_id: sessionId, offset: offset }, close: false };
-                    }
-                    var resp = await fetch(url, {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': 'Bearer ' + accessToken,
-                            'Content-Type': 'application/octet-stream',
-                            'Dropbox-API-Arg': JSON.stringify(args)
-                        },
-                        body: chunk
-                    });
-                    if (!resp.ok) {
-                        var errTxt = await resp.text();
-                        throw new Error('Dropbox HTTP ' + resp.status + ': ' + errTxt.substring(0, 200));
-                    }
-                    if (isFirst && !isLast) {
-                        var startJson = await resp.json();
-                        sessionId = startJson.session_id;
-                    }
-                    if (isLast) {
-                        var finalJson = await resp.json();
-                        finalPath = finalJson.path_lower || dropboxPath.toLowerCase();
-                    }
-                    offset = end;
-                    var pct = Math.round((offset / totalSize) * 95);
-                    setProgress(pct, pct + '% — ' + formatSize(offset) + ' / ' + formatSize(totalSize));
-                }
+    while(offset < totalSize){
+      var end = Math.min(offset + CHUNK_SIZE, totalSize);
+      var chunk = selectedFile.slice(offset, end);
+      var isFirst = (offset === 0);
+      var isLast = (end === totalSize);
+      var url, args;
+      if(isFirst && isLast){
+        url = 'https://content.dropboxapi.com/2/files/upload';
+        args = { path: dropboxPath, mode: 'add', autorename: true };
+      } else if(isFirst){
+        url = 'https://content.dropboxapi.com/2/files/upload_session/start';
+        args = { close: false };
+      } else if(isLast){
+        url = 'https://content.dropboxapi.com/2/files/upload_session/finish';
+        args = { cursor: { session_id: sessionId, offset: offset }, commit: { path: dropboxPath, mode: 'add', autorename: true } };
+      } else {
+        url = 'https://content.dropboxapi.com/2/files/upload_session/append_v2';
+        args = { cursor: { session_id: sessionId, offset: offset }, close: false };
+      }
+      var resp = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + accessToken,
+          'Content-Type': 'application/octet-stream',
+          'Dropbox-API-Arg': JSON.stringify(args)
+        },
+        body: chunk
+      });
+      if(!resp.ok){
+        var errTxt = await resp.text();
+        throw new Error('Dropbox HTTP ' + resp.status + ': ' + errTxt.substring(0,200));
+      }
+      if(isFirst && !isLast){
+        var startJson = await resp.json();
+        sessionId = startJson.session_id;
+      }
+      if(isLast){
+        var finalJson = await resp.json();
+        finalPath = finalJson.path_lower || dropboxPath.toLowerCase();
+      }
+      offset = end;
+      var pct = Math.round((offset / totalSize) * 95);
+      setProgress(pct, pct + '% — ' + formatSize(offset) + ' / ' + formatSize(totalSize));
+    }
 
-                setProgress(97, 'Salvataggio riferimento in gestionale...');
-                var saveResult = await callSaveApi(referralId, finalPath);
-                if (!saveResult || saveResult.error) throw new Error('Save: ' + (saveResult && saveResult.error || 'unknown'));
+    setProgress(97, 'Salvataggio riferimento in gestionale...');
+    var saveResult = await callSaveApi(referralId, finalPath);
+    if(!saveResult || saveResult.error) throw new Error('Save: ' + (saveResult && saveResult.error || 'unknown'));
 
-                setProgress(100, 'Completato!');
-                resultArea.innerHTML = '<div class="result success">✅ <strong>File caricato e collegato al referral.</strong><br>Path: ' + finalPath + '</div>';
-                uploadBtn.style.display = 'none';
-                dropzone.style.pointerEvents = 'none';
-                dropzone.style.opacity = '0.5';
-            } catch (err) {
-                console.error(err);
-                resultArea.innerHTML = '<div class="result error">❌ ' + (err.message || err) + '</div>';
-                uploadBtn.disabled = false;
-            }
-        }
+    setProgress(100, 'Completato!');
+    resultArea.innerHTML = '<div class="result success">✅ <strong>File caricato e collegato al referral.</strong><br>Path: ' + finalPath + '</div>';
+    uploadBtn.style.display = 'none';
+    dropzone.style.pointerEvents = 'none';
+    dropzone.style.opacity = '0.5';
+  } catch(err){
+    console.error(err);
+    resultArea.innerHTML = '<div class="result error">❌ ' + (err.message || err) + '</div>';
+    uploadBtn.disabled = false;
+  }
+}
 
-        // Inizializzazione SDK Zoho Creator per ottenere il page parameter
-        ZOHO.CREATOR.init().then(function (data) {
-            console.log('Widget initialized', data);
-            // I page parameters arrivano in data.params (o si possono leggere da URL)
-            if (data && data.params) {
-                referralId = data.params.p_referral_id || data.params.referral_id || '';
-            }
-            // Fallback: prova a leggere dall'URL del parent window
-            if (!referralId) {
-                try {
-                    var parentUrl = window.parent.location.href;
-                    var m = parentUrl.match(/[?&#]p_referral_id=(\d+)/);
-                    if (m) referralId = m[1];
-                } catch (e) { /* cross-origin */ }
-            }
-            // Fallback: URL del widget stesso
-            if (!referralId) {
-                var qs = new URLSearchParams(window.location.search);
-                referralId = qs.get('p_referral_id') || qs.get('referral_id') || '';
-            }
-            referralDisplay.textContent = referralId || 'Mancante!';
-            if (!referralId) {
-                resultArea.innerHTML = '<div class="result error">⚠️ Referral ID mancante. Torna al form e ricomincia.</div>';
-            }
-        }).catch(function (err) {
-            console.error('SDK init failed', err);
-            // Senza SDK, prova lo stesso a leggere dall'URL
-            var qs = new URLSearchParams(window.location.search);
-            referralId = qs.get('p_referral_id') || qs.get('referral_id') || '';
-            referralDisplay.textContent = referralId || 'Mancante!';
-            if (!referralId) {
-                resultArea.innerHTML = '<div class="result error">⚠️ Referral ID mancante. Apertura tramite SDK fallita.</div>';
-            }
-        });
-    </script>
+// === RECUPERO REFERRAL_ID ===
+// Strategia multi-fallback: cerca in tutti i posti possibili
+function findReferralId(){
+  // 1. URL del widget stesso (query string ?p_referral_id=...)
+  var qs = new URLSearchParams(window.location.search);
+  var v = qs.get('p_referral_id') || qs.get('referral_id');
+  if(v) return v;
+  // 2. URL del widget (hash)
+  var hash = window.location.hash;
+  var qIdx = hash.indexOf('?');
+  if(qIdx >= 0){
+    var hashQs = new URLSearchParams(hash.substring(qIdx+1));
+    v = hashQs.get('p_referral_id') || hashQs.get('referral_id');
+    if(v) return v;
+  }
+  // 3. URL del parent window (se siamo in iframe)
+  try {
+    var parentUrl = window.parent.location.href;
+    var m1 = parentUrl.match(/[?&]p_referral_id=(\d+)/);
+    if(m1) return m1[1];
+    var m2 = parentUrl.match(/[?&#]referral_id=(\d+)/);
+    if(m2) return m2[1];
+    var m3 = parentUrl.match(/Upload_Studio\D*(\d+)/);
+    if(m3) return m3[1];
+  } catch(e){ /* cross-origin: skip */ }
+  return '';
+}
+
+referralId = findReferralId();
+referralDisplay.textContent = referralId || 'Mancante!';
+console.log('Referral ID found:', referralId);
+console.log('Window URL:', window.location.href);
+try { console.log('Parent URL:', window.parent.location.href); } catch(e){}
+if(!referralId){
+  resultArea.innerHTML = '<div class="result error">⚠️ Referral ID mancante. Riprova dal form di creazione studio.</div>';
+}
+
+// Listener: se Zoho invia il param via postMessage, lo intercettiamo
+window.addEventListener('message', function(event){
+  if(event.data && event.data.p_referral_id){
+    referralId = event.data.p_referral_id;
+    referralDisplay.textContent = referralId;
+    if(resultArea.innerHTML.indexOf('mancante') >= 0) resultArea.innerHTML = '';
+  }
+});
+</script>
 </body>
-
 </html>
