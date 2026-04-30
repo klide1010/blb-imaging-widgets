@@ -3,10 +3,9 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Caricamento Studio</title>
-<script src="https://js.zohostatic.com/creator/v2.0/widgetsdk/v2/zc-widgetsdk.min.js"></script>
+<title>Caricamento Studio Diagnostico - BLB Imaging</title>
 <style>
-body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f7; }
+body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f7; min-height: 100vh; }
 .upload-container { max-width: 720px; margin: 40px auto; padding: 32px; background: white; border-radius: 12px; box-shadow: 0 4px 20px rgba(44, 13, 74, 0.08); }
 .upload-header { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
 .upload-header h1 { margin: 0; color: #2C0D4A; font-size: 24px; }
@@ -28,7 +27,9 @@ body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Ro
 .result { margin-top: 16px; padding: 14px; border-radius: 8px; font-size: 14px; word-break: break-word; }
 .result.success { background: #E6F7E6; color: #1a6b1a; border: 1px solid #4CAF50; }
 .result.error { background: #FDECEA; color: #b00020; border: 1px solid #E57373; }
-.debug-box { margin: 12px 0; padding: 8px; background: #fff8dc; border: 1px dashed #999; font-family: monospace; font-size: 11px; color: #555; border-radius: 4px; }
+.btn-secondary { display: inline-block; margin-top: 20px; padding: 12px 24px; background: #6733AB; color: white; border-radius: 8px; text-decoration: none; font-weight: 600; transition: background 0.2s; }
+.btn-secondary:hover { background: #2C0D4A; }
+.center { text-align: center; }
 </style>
 </head>
 <body>
@@ -41,10 +42,8 @@ body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Ro
   <div class="upload-subtitle">Carica il file dello studio (RX/RM/TC) direttamente su Dropbox. Nessun limite di dimensione.</div>
 
   <div class="referral-info">
-    <strong>Referral ID:</strong> <span id="referral-id-display">caricamento...</span>
+    <strong>ID Studio:</strong> <span id="referral-id-display">—</span>
   </div>
-
-  <div class="debug-box" id="debug-box">DEBUG: in attesa SDK Zoho...</div>
 
   <div class="dropzone" id="dropzone">
     <div class="dropzone-icon">📁</div>
@@ -72,6 +71,7 @@ var TOKEN_URL = "https://www.zohoapis.eu/creator/custom/klide10/getDropboxToken"
 var TOKEN_KEY = "RabVnGs7dTOhjtMU8wQd9O64Q";
 var SAVE_URL  = "https://www.zohoapis.eu/creator/custom/klide10/saveDropboxPathToReferral";
 var SAVE_KEY  = "nqDepz76bhTWxQDzjBudd19gX";
+var ZOHO_APP_URL = "https://creatorapp.zoho.eu/klide10/environment/development/veterinary-diagnostic-referral-management/";
 var CHUNK_SIZE = 8 * 1024 * 1024;
 
 var referralId = '';
@@ -86,12 +86,6 @@ var progressBar = document.getElementById('progress-bar');
 var progressText = document.getElementById('progress-text');
 var resultArea = document.getElementById('result-area');
 var referralDisplay = document.getElementById('referral-id-display');
-var debugBox = document.getElementById('debug-box');
-
-function debug(msg){
-  console.log('[DBX-WIDGET]', msg);
-  debugBox.innerHTML += '<br>' + msg;
-}
 
 function formatSize(bytes){
   if(bytes < 1024*1024) return (bytes/1024).toFixed(1) + ' KB';
@@ -162,17 +156,17 @@ async function callSaveApi(p_referral_id, p_dropbox_path){
 async function startUpload(){
   if(!selectedFile) return;
   if(!referralId){
-    resultArea.innerHTML = '<div class="result error">⚠️ Referral ID mancante. Ricarica la pagina.</div>';
+    resultArea.innerHTML = '<div class="result error">⚠️ ID studio mancante.</div>';
     return;
   }
   uploadBtn.disabled = true;
   resultArea.innerHTML = '';
   progressWrap.style.display = 'block';
-  setProgress(0, 'Richiesta token Dropbox...');
+  setProgress(0, 'Inizializzazione...');
 
   try {
     var tokenData = await callTokenApi();
-    if(!tokenData || tokenData.error) throw new Error('Auth: ' + (tokenData && tokenData.error || 'unknown'));
+    if(!tokenData || tokenData.error) throw new Error('Autenticazione: ' + (tokenData && tokenData.error || 'errore sconosciuto'));
     var accessToken = tokenData.access_token;
     var clinicName = tokenData.clinic_name;
     var basePath = tokenData.base_path;
@@ -233,12 +227,19 @@ async function startUpload(){
       setProgress(pct, pct + '% — ' + formatSize(offset) + ' / ' + formatSize(totalSize));
     }
 
-    setProgress(97, 'Salvataggio riferimento in gestionale...');
+    setProgress(97, 'Salvataggio nel gestionale...');
     var saveResult = await callSaveApi(referralId, finalPath);
-    if(!saveResult || saveResult.error) throw new Error('Save: ' + (saveResult && saveResult.error || 'unknown'));
+    if(!saveResult || saveResult.error) throw new Error('Salvataggio: ' + (saveResult && saveResult.error || 'errore sconosciuto'));
 
     setProgress(100, 'Completato!');
-    resultArea.innerHTML = '<div class="result success">✅ <strong>File caricato e collegato al referral.</strong><br>Path: ' + finalPath + '</div>';
+    resultArea.innerHTML =
+      '<div class="result success">' +
+      '✅ <strong>File caricato e collegato allo studio ' + referralId + '.</strong><br>' +
+      'Il sistema sta processando il referral. Puoi tornare al gestionale.' +
+      '</div>' +
+      '<div class="center">' +
+      '<a href="' + ZOHO_APP_URL + '" class="btn-secondary">← Torna al gestionale</a>' +
+      '</div>';
     uploadBtn.style.display = 'none';
     dropzone.style.pointerEvents = 'none';
     dropzone.style.opacity = '0.5';
@@ -249,71 +250,13 @@ async function startUpload(){
   }
 }
 
-// === INIZIALIZZAZIONE SDK ZOHO ===
-function setReferralId(id){
-  referralId = id ? String(id) : '';
-  referralDisplay.textContent = referralId || 'Mancante!';
-  if(!referralId){
-    resultArea.innerHTML = '<div class="result error">⚠️ Referral ID mancante. Riprova dal form di creazione studio.</div>';
-  } else {
-    resultArea.innerHTML = '';
-  }
+// Lettura referral_id da query string
+var qs = new URLSearchParams(window.location.search);
+referralId = qs.get('p_referral_id') || qs.get('referral_id') || '';
+referralDisplay.textContent = referralId || 'Mancante!';
+if(!referralId){
+  resultArea.innerHTML = '<div class="result error">⚠️ ID studio mancante nell\'URL. Torna al gestionale e crea un nuovo studio.</div>';
 }
-
-function tryFallbackParam(){
-  // Fallback: leggi da query string del widget URL
-  var qs = new URLSearchParams(window.location.search);
-  var v = qs.get('p_referral_id') || qs.get('referral_id');
-  if(v) {
-    debug('Fallback: trovato in window.location.search = ' + v);
-    setReferralId(v);
-    return true;
-  }
-  return false;
-}
-
-setTimeout(function(){
-  if(typeof ZOHO === 'undefined'){
-    debug('SDK ZOHO non caricato (window.ZOHO undefined). URL attuale: ' + window.location.href);
-    if(!tryFallbackParam()){
-      setReferralId('');
-    }
-    return;
-  }
-  debug('SDK ZOHO caricato, chiamo init()...');
-  ZOHO.CREATOR.init().then(function(data){
-    debug('init() ok. Risposta: ' + JSON.stringify(data).substring(0, 200));
-    if(typeof ZOHO.CREATOR.UTIL !== 'undefined' && typeof ZOHO.CREATOR.UTIL.getWidgetParams === 'function'){
-      ZOHO.CREATOR.UTIL.getWidgetParams().then(function(resp){
-        debug('getWidgetParams() ok. Risposta: ' + JSON.stringify(resp).substring(0, 300));
-        var params = (resp && resp.data) || resp || {};
-        var id = params.p_referral_id || params.referral_id || (params.params && (params.params.p_referral_id || params.params.referral_id)) || '';
-        if(id){
-          setReferralId(id);
-        } else {
-          debug('getWidgetParams non ha trovato p_referral_id, tento fallback URL...');
-          if(!tryFallbackParam()) setReferralId('');
-        }
-      }).catch(function(err){
-        debug('getWidgetParams() ERROR: ' + JSON.stringify(err));
-        if(!tryFallbackParam()) setReferralId('');
-      });
-    } else {
-      debug('getWidgetParams non disponibile sul SDK. Tento fallback URL...');
-      if(!tryFallbackParam()) setReferralId('');
-    }
-  }).catch(function(err){
-    debug('init() ERROR: ' + JSON.stringify(err));
-    if(!tryFallbackParam()) setReferralId('');
-  });
-}, 100);
-
-window.addEventListener('message', function(event){
-  if(event.data && event.data.p_referral_id){
-    debug('Ricevuto via postMessage: ' + event.data.p_referral_id);
-    setReferralId(event.data.p_referral_id);
-  }
-});
 </script>
 </body>
 </html>
